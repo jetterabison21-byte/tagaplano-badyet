@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tagaplanong Badyet</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f0f7ff;color:#183153}
+header{background:linear-gradient(135deg,#1679aa,#6854c7);color:white;text-align:center;padding:28px 16px}
+header h1{margin:0 0 8px;font-size:30px}
+main{max-width:950px;margin:22px auto;padding:0 14px}
+.card{background:white;padding:20px;margin-bottom:18px;border-radius:16px;box-shadow:0 4px 14px #17345e15}
+h2{margin-top:0;color:#176b9a}
+label{display:block;font-weight:bold;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #b9c9dc;border-radius:8px;font-size:15px}
+button{border:0;border-radius:9px;padding:12px 16px;font-size:15px;font-weight:bold;cursor:pointer}
+.primary{background:#1679aa;color:white}
+.secondary{background:#e8efff;color:#244c88}
+.allocation{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.alloc{padding:16px;border-radius:12px}
+.needs{background:#e0f5df}
+.savings{background:#e0efff}
+.wants{background:#fff0dc}
+.money{font-size:23px;font-weight:bold;margin-top:8px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:650px}
+th,td{border:1px solid #ccd8e6;padding:8px;text-align:left}
+th{background:#e8f2ff}
+td input,td select{min-width:100px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.total{font-size:18px;font-weight:bold;margin-top:14px}
+.small{font-size:13px;color:#536579}
+footer{text-align:center;padding:20px;color:#667}
+@media print{button,.no-print{display:none!important}body{background:white}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<header>
+<h1>💰 TAGAPLANONG BADYET</h1>
+<p>Matutong magplano, gumastos nang wasto, at mag-ipon para sa kinabukasan.</p>
+</header>
+
+<main>
+<section class="card">
+<h2>1. Impormasyon ng Mag-aaral</h2>
+<label for="pangalan">Pangalan</label>
+<input id="pangalan" placeholder="Ilagay ang iyong pangalan">
+<label for="baitang">Baitang at Seksyon</label>
+<input id="baitang" placeholder="Hal. Baitang 12 - ABM">
+<label for="petsa">Petsa</label>
+<input id="petsa" type="date">
+</section>
+
+<section class="card">
+<h2>2. Kabuuang Pera</h2>
+<label for="kita">Kabuuang perang mayroon ka (₱)</label>
+<input id="kita" type="number" min="0" step="0.01" placeholder="Ilagay ang halaga" oninput="kalkulahin()">
+<div class="allocation" style="margin-top:15px">
+<div class="alloc needs"><strong>🛒 PANGANGAILANGAN — 70%</strong><div class="money" id="needsBudget">₱0.00</div><p class="small">Pagkain, pamasahe, at gamit sa paaralan.</p></div>
+<div class="alloc savings"><strong>🐷 PAG-IIMPOK — 20%</strong><div class="money" id="savingsBudget">₱0.00</div><p class="small">Ipon para sa hinaharap at emergency.</p></div>
+<div class="alloc wants"><strong>🎮 KAGUSTUHAN — 10%</strong><div class="money" id="wantsBudget">₱0.00</div><p class="small">Libangan at mga bagay na hindi kailangan.</p></div>
+</div>
+</section>
+
+<section class="card">
+<h2>3. Talaan ng mga Gastusin</h2>
+<p>Ilagay ang sarili mong mga gastusin sa tamang kategorya. Hindi kailangang punan ang lahat ng hanay.</p>
+
+<h3>🛒 A. Pangangailangan — 70%</h3>
+<div class="tablewrap"><table id="needsTable">
+<thead><tr><th>Petsa</th><th>Bagay / Paglalarawan</th><th>Kategorya</th><th>Halaga (₱)</th><th class="no-print">Aksyon</th></tr></thead>
+<tbody></tbody></table></div>
+<button class="secondary no-print" onclick="magdagdag('needsTable','Pangangailangan')">+ Magdagdag ng Hanay</button>
+<div class="total">Kabuuang Gastos: <span id="needsTotal">₱0.00</span></div>
+
+<h3>🐷 B. Pag-iimpok — 20%</h3>
+<div class="tablewrap"><table id="savingsTable">
+<thead><tr><th>Petsa</th><th>Bagay / Paglalarawan</th><th>Kategorya</th><th>Halaga (₱)</th><th class="no-print">Aksyon</th></tr></thead>
+<tbody></tbody></table></div>
+<button class="secondary no-print" onclick="magdagdag('savingsTable','Pag-iimpok')">+ Magdagdag ng Hanay</button>
+<div class="total">Kabuuang Ipon: <span id="savingsTotal">₱0.00</span></div>
+
+<h3>🎮 C. Kagustuhan — 10%</h3>
+<div class="tablewrap"><table id="wantsTable">
+<thead><tr><th>Petsa</th><th>Bagay / Paglalarawan</th><th>Kategorya</th><th>Halaga (₱)</th><th class="no-print">Aksyon</th></tr></thead>
+<tbody></tbody></table></div>
+<button class="secondary no-print" onclick="magdagdag('wantsTable','Kagustuhan')">+ Magdagdag ng Hanay</button>
+<div class="total">Kabuuang Gastos: <span id="wantsTotal">₱0.00</span></div>
+
+<hr style="margin-top:20px;border:0;border-top:1px solid #ddd">
+<div class="total">Kabuuang Nagastos at Naipon: <span id="grandTotal">₱0.00</span></div>
+<div class="total">Natitirang Pera: <span id="remaining">₱0.00</span></div>
+<p id="status" class="small">Ilagay ang iyong kabuuang pera at mga gastusin.</p>
+</section>
+
+<section class="card">
+<h2>4. Aking Repleksiyon</h2>
+<label for="natutuhan">Ano ang natutuhan mo tungkol sa tamang pagbabadyet?</label>
+<textarea id="natutuhan" rows="3" placeholder="Isulat ang iyong sagot dito..."></textarea>
+<label for="hamon">Ano ang pinakamahirap na bahagi ng pagpaplano ng iyong pera?</label>
+<textarea id="hamon" rows="3" placeholder="Isulat ang iyong sagot dito..."></textarea>
+<label for="gagawin">Paano mo mapapabuti ang paggamit mo ng pera?</label>
+<textarea id="gagawin" rows="3" placeholder="Isulat ang iyong sagot dito..."></textarea>
+</section>
+
+<section class="card no-print">
+<h2>5. Isumite ang Iyong Gawain</h2>
+<p>Siguraduhing tama ang iyong mga sagot bago isumite.</p>
+<div class="actions">
+<button class="primary" onclick="ipakitaBuod()">Tingnan ang Buod</button>
+<button class="secondary" onclick="window.print()">I-print / I-save bilang PDF</button>
+<button class="secondary" onclick="kopyahinSagot()">Kopyahin ang mga Sagot</button>
+</div>
+<p class="small">Paalala: Ang bersiyong ito ay hindi pa nagpapadala ng mga sagot sa laptop ng guro o nag-iimbak ng mga ito online. Kailangang ikonekta sa isang ligtas na online na imbakan para makita ang sagot ng buong klase.</p>
+</section>
+
+<section class="card" id="buod" hidden>
+<h2>Buod ng Iyong Gawain</h2>
+<pre id="buodText" style="white-space:pre-wrap;font-family:Arial,sans-serif"></pre>
+</section>
+</main>
+<footer>Tagaplanong Badyet • Gawing matalino ang bawat piso.</footer>
+
+<script>
+function pera(n){return '₱'+(Number(n)||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function halaga(id){return Math.max(0,Number(document.getElementById(id).value)||0)}
+function kalkulahin(){
+ const kita=halaga('kita');
+ document.getElementById('needsBudget').textContent=pera(kita*.70);
+ document.getElementById('savingsBudget').textContent=pera(kita*.20);
+ document.getElementById('wantsBudget').textContent=pera(kita*.10);
+ const n=total('needsTable'),s=total('savingsTable'),w=total('wantsTable');
+ document.getElementById('needsTotal').textContent=pera(n);
+ document.getElementById('savingsTotal').textContent=pera(s);
+ document.getElementById('wantsTotal').textContent=pera(w);
+ const gastos=n+s+w;
+ document.getElementById('grandTotal').textContent=pera(gastos);
+ document.getElementById('remaining').textContent=pera(kita-gastos);
+ document.getElementById('status').textContent=kita===0?'Ilagay ang iyong kabuuang pera.':gastos>kita?'Lampas sa kabuuang pera ang nailagay mong halaga.':'May natitira ka pang '+pera(kita-gastos)+'.';
+}
+function magdagdag(tableId,category){
+ const tbody=document.querySelector('#'+tableId+' tbody');
+ const tr=document.createElement('tr');
+ tr.innerHTML='<td><input type="date" aria-label="Petsa"></td><td><input placeholder="Ilagay ang paglalarawan" aria-label="Paglalarawan"></td><td><select aria-label="Kategorya"><option>'+category+'</option></select></td><td><input type="number" min="0" step="0.01" value="0" aria-label="Halaga"></td><td class="no-print"><button class="secondary" type="button">Alisin</button></td>';
+ tr.querySelector('button').onclick=()=>{tr.remove();kalkulahin()};
+ tr.querySelectorAll('input').forEach(el=>el.addEventListener('input',kalkulahin));
+ tbody.appendChild(tr);
+ kalkulahin();
+}
+function total(tableId){
+ return [...document.querySelectorAll('#'+tableId+' tbody tr')].reduce((sum,tr)=>sum+Math.max(0,Number(tr.querySelectorAll('input')[2]?.value)||0),0);
+}
+function buod(){
+ const lines=[];
+ lines.push('TAGAPLANONG BADYET');
+ lines.push('Pangalan: '+(document.getElementById('pangalan').value||'Hindi inilagay'));
+ lines.push('Baitang at Seksyon: '+(document.getElementById('baitang').value||'Hindi inilagay'));
+ lines.push('Petsa: '+(document.getElementById('petsa').value||'Hindi inilagay'));
+ lines.push('Kabuuang Pera: '+pera(halaga('kita')));
+ [['PANGANGAILANGAN','needsTable'],['PAG-IIMPOK','savingsTable'],['KAGUSTUHAN','wantsTable']].forEach(([name,id])=>{
+  lines.push('\n'+name);
+  document.querySelectorAll('#'+id+' tbody tr').forEach(tr=>{
+   const inputs=tr.querySelectorAll('input');
+   if(inputs[1].value||Number(inputs[2].value)>0) lines.push((inputs[0].value||'Walang petsa')+' — '+(inputs[1].value||'Walang paglalarawan')+' — '+pera(inputs[2].value));
+  });
+ });
+ lines.push('\nKabuuang nagastos at naipon: '+document.getElementById('grandTotal').textContent);
+ lines.push('Natitirang pera: '+document.getElementById('remaining').textContent);
+ lines.push('\nNatutuhan: '+document.getElementById('natutuhan').value);
+ lines.push('Hamon: '+document.getElementById('hamon').value);
+ lines.push('Plano: '+document.getElementById('gagawin').value);
+ return lines.join('\n');
+}
+function ipakitaBuod(){
+ document.getElementById('buodText').textContent=buod();
+ document.getElementById('buod').hidden=false;
+ document.getElementById('buod').scrollIntoView({behavior:'smooth'});
+}
+function kopyahinSagot(){
+ const text=buod();
+ if(navigator.clipboard && navigator.clipboard.writeText){
+  navigator.clipboard.writeText(text).then(()=>alert('Nakopya na ang iyong mga sagot.')).catch(()=>prompt('Kopyahin ang mga sagot:',text));
+ }else{prompt('Kopyahin ang mga sagot:',text)}
+}
+magdagdag('needsTable','Pangangailangan');
+magdagdag('savingsTable','Pag-iimpok');
+magdagdag('wantsTable','Kagustuhan');
+document.getElementById('petsa').value=new Date().toLocaleDateString('en-CA');
+</script>
+</body>
+</html>
+
